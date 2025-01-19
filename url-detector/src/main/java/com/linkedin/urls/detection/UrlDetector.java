@@ -183,9 +183,9 @@ public class UrlDetector {
             }
           }
           break;
-        case '\u3002': //non-standard dots
-        case '\uFF0E':
-        case '\uFF61':
+        case '\u3002': //non-standard dots 中文全角句号：'。'
+        case '\uFF0E': // 英文全角点：'．'
+        case '\uFF61': // 中文半角句号:'｡'
         case '.': //"." was found, read the domain name using the start from length.
           _buffer.append(curr);
           readDomainName(_buffer.substring(length));

@@ -318,7 +318,7 @@ public class DomainNameReader {
     boolean done = false;
     while (!done && !_reader.eof()) {
       char curr = _reader.read();
-
+      // 朝后读取整个域名，遇到这些字符都不认为是域名的结束，当这些都不是的时候才会认为是域名的结束，比如空格
       if (curr == '/') {
         //continue by reading the path
         return checkDomainNameValid(ReaderNextState.ReadPath, curr);
