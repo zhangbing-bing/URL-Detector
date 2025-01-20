@@ -8,7 +8,7 @@
  *
  */
 package com.linkedin.urls;
-
+// 用于标识url的各个部分的位置
 public class UrlMarker {
 
   private String _originalUrl;

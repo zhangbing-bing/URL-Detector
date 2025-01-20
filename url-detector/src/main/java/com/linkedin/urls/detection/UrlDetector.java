@@ -28,7 +28,7 @@ public class UrlDetector {
   private static final String HTML_MAILTO = "mailto:";
 
   /**
-   * Valid protocol schemes.
+   * Valid protocol schemes.，可以动态调整
    */
   private static final Set<String> VALID_SCHEMES = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
       "http://", "https://", "ftp://", "ftps://", "http%3a//", "https%3a//", "ftp%3a//", "ftps%3a//")));
@@ -149,7 +149,8 @@ public class UrlDetector {
   private void readDefault() {
     //Keeps track of the number of characters read to be able to later cut out the domain name.
     int length = 0;
-
+    // 读取的逻辑是先用一个buffer缓存已经读到的字符，如果读到了空格或者截断，它会去判断buffer中现有的字符是否符合URL的各个部分，
+    // 会判断状态是否可以是URL的结尾，如果是则会加到结果中
     //until end of string read the contents
     while (!_reader.eof()) {
       //read the next char to process.
@@ -255,6 +256,7 @@ public class UrlDetector {
         default:
           //Check if we need to match characters. If we match characters and this is a start or stop of range,
           //either way reset the world and start processing again.
+          // 根据配置判断当前字符是不是这些配置中的开始或者结束，如果是的话则读取结束，如果不是的话则把当前读取到的缓存到buffer中
           if (checkMatchingCharacter(curr) != CharacterMatch.CharacterNotMatched) {
             readEnd(ReadEndState.InvalidUrl);
             length = 0;
@@ -316,7 +318,7 @@ public class UrlDetector {
     return count == null ? 0 : count;
   }
 
-  /**
+  /** 检测不同模式的curr字符是否是开始、结束、或者未匹配开始结束
    * Increments the counter for the characters seen and return if this character matches a special character
    * that might require stopping reading the url.
    * @param curr The character to check.
@@ -523,6 +525,7 @@ public class UrlDetector {
    */
   private boolean readDomainName(String current) {
     int hostIndex = current == null ? _buffer.length() : _buffer.length() - current.length();
+    // domain就是host
     _currentUrlMarker.setIndex(UrlPart.HOST, hostIndex);
     //create the domain name reader and specify the handler that will be called when a quote character
     //or something is found.
@@ -677,7 +680,7 @@ public class UrlDetector {
     return readEnd(ReadEndState.ValidUrl);
   }
 
-  /**
+  /** 这里表示读取结束了并重置标识位，如果是合法的就加到结果中
    * The url has been read to here. Remember the url if its valid, and reset state.
    * @param state The state indicating if this url is valid. If its valid it will be added to the list of urls.
    * @return True if the url was valid.

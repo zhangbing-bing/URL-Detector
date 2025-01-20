@@ -308,7 +308,7 @@ public class DomainNameReader {
    * @return The next state to take.
    */
   public ReaderNextState readDomainName() {
-
+    // 检查当前读取到的字符是否可以是domain的开始
     //Read the current, and if its bad, just return.
     if (readCurrent() == ReaderNextState.InvalidDomainName) {
       return ReaderNextState.InvalidDomainName;
