@@ -157,7 +157,8 @@ public class UrlDetector {
 
       switch (curr) {
         case ' ':
-          //space was found, check if it's a valid single level domain.
+          // space was found, check if it's a valid single level domain.
+          // 找到了域名，判断是否支持单个域名：http://localhost:8080/
           if (_options.hasFlag(UrlDetectorOptions.ALLOW_SINGLE_LEVEL_DOMAIN) && _buffer.length() > 0 && _hasScheme) {
             _reader.goBack();
             readDomainName(_buffer.substring(length));

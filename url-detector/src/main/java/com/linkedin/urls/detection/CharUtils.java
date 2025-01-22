@@ -10,10 +10,19 @@
 package com.linkedin.urls.detection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 
 
 public class CharUtils {
+  private final static Set<Character> Chinese_Point = new HashSet<>(Arrays.asList('。','，','、','；','：','？','！','“','”','（','）','…','…','—','—','《','》'));
+  public static boolean isChinesePoint(char ch) {
+    return Chinese_Point.contains(ch);
+//    return true;
+  }
 
   /**
    * Checks if character is a valid hex character.

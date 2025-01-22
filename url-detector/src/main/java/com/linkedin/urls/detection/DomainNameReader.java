@@ -135,6 +135,7 @@ public class DomainNameReader {
 
   /**
    * Keeps track of the number of characters since the last "."
+   * 用于跟踪上一个.以来的字符数
    */
   private int _currentLabelLength = 0;
 
@@ -156,6 +157,7 @@ public class DomainNameReader {
 
   /**
    * Keeps track if we are seeing an ipv6 type address.
+   * 用于跟踪ipv6类型
    */
   private boolean _seenBracket = false;
 
@@ -262,7 +264,7 @@ public class DomainNameReader {
             isAllHexSoFar = false;
             index--; //backtrack to rerun last character knowing it isn't hex.
           }
-        } else if (CharUtils.isAlpha(curr) || curr == '-' || curr >= INTERNATIONAL_CHAR_START) {
+        } else if (CharUtils.isAlpha(curr) || curr == '-' || (curr >= INTERNATIONAL_CHAR_START && !CharUtils.isChinesePoint(curr))) {
           _numeric = false;
         } else if (!CharUtils.isNumeric(curr) && !_options.hasFlag(UrlDetectorOptions.ALLOW_SINGLE_LEVEL_DOMAIN)) {
           //if its not _numeric and not alphabetical, then restart searching for a domain from this point.
@@ -309,7 +311,8 @@ public class DomainNameReader {
    */
   public ReaderNextState readDomainName() {
 
-    //Read the current, and if its bad, just return.
+    // Read the current, and if its bad, just return.
+    // 读取域名的开始位置，如果读取的过程中发现不是域名则返回
     if (readCurrent() == ReaderNextState.InvalidDomainName) {
       return ReaderNextState.InvalidDomainName;
     }
@@ -336,8 +339,8 @@ public class DomainNameReader {
           || (curr == '%' && _reader.canReadChars(2) && _reader.peek(2).equalsIgnoreCase(HEX_ENCODED_DOT))) {
         //if the current character is a dot or a urlEncodedDot
 
-        //handles the case: hello..
-        if (_currentLabelLength < 1) {
+        //handles the case: hello..，增加中文标点处理
+        if (_currentLabelLength < 1 || CharUtils.isChinesePoint(curr)) {
           done = true;
         } else {
           //append the "." to the domain name
@@ -384,8 +387,9 @@ public class DomainNameReader {
         }
         _numeric = false;
         _buffer.append(curr);
-      } else if (CharUtils.isAlphaNumeric(curr) || curr == '-' || curr >= INTERNATIONAL_CHAR_START) {
+      } else if (CharUtils.isAlphaNumeric(curr) || curr == '-' || (curr >= INTERNATIONAL_CHAR_START && !CharUtils.isChinesePoint(curr))) {   // 添加中文字符判断
         //Valid domain name character. Either a-z, A-Z, 0-9, -, or international character
+        // 判断是有效的域名字符
         if (_seenCompleteBracketSet) {
           //covers case of [fe80::]www.google.com
           _reader.goBack();
